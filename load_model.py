@@ -1,7 +1,8 @@
 import sys
 import logging
 import tensorflow as tf
-from dynaconf import settings
+
+IMG_SIZE = 320
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
@@ -20,7 +21,7 @@ def load_tflite_model(model_path):
   # take some time, after which inference should be fast.
   # Run model through a dummy image
 
-  preprocessed_image = tf.zeros([1, settings.IMG_SIZE, settings.IMG_SIZE, 3])
+  preprocessed_image = tf.zeros([1, IMG_SIZE, IMG_SIZE, 3])
 
   input_details = interpreter.get_input_details()
   output_details = interpreter.get_output_details()
@@ -37,7 +38,7 @@ def load_tflite_model(model_path):
   return interpreter
 
 def main():
-  load_tflite_model(settings.MODEL_PATH)
+  load_tflite_model('model.tflite')
 
 if __name__=="__main__":
   main()

@@ -4,7 +4,6 @@ import argparse
 import glob
 import numpy as np
 from pathlib import Path
-from dynaconf import settings
 from tqdm import tqdm
 
 import load_model
@@ -15,7 +14,6 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 def evaluate(model_path, input, output):
   interpreter = load_model.load_tflite_model(model_path)
-  label_id_offset = settings.LABEL_ID_OFFSET
   category_index = {'digital_class_id': {'id': 'digital_class_id', 'name': 'digital'}}
 
   images = glob.glob(input + '/*.jpeg', recursive=False)
@@ -33,7 +31,7 @@ def evaluate(model_path, input, output):
     utils.plot_detections(
       image_tensor,
       boxes[0],
-      classes[0].astype(np.uint32) + label_id_offset,
+      classes[0].astype(np.uint32),
       scores[0],
       category_index,
       figsize=(15, 20),
@@ -47,12 +45,13 @@ def main():
   The function draws bounding box on testing images
   """
   parser = argparse.ArgumentParser()
-  parser.add_argument("--input", default="meeter_detection/training_data/test", help="Folder where we have stored testing images")
-  parser.add_argument("--output", default="meeter_detection/output", help="Folder where we store predicted images with bounding box")
+  parser.add_argument("--input", default="test", help="Folder where we have stored testing images")
+  parser.add_argument("--output", default="output", help="Folder where we store predicted images with bounding box")
+  parser.add_argument("--model", default="model.tflite", help="TFlite meeter display detection model")
   args = parser.parse_args()
 
   Path(args.output).mkdir(parents=True, exist_ok=True)
-  evaluate(settings.MODEL_PATH, args.input, args.output)
+  evaluate(args.model, args.input, args.output)
 
 if __name__=="__main__":
   main()

@@ -1,7 +1,6 @@
 import tensorflow as tf
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 from six import BytesIO
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -22,6 +21,7 @@ def load_image_into_numpy_array(path):
   """
   img_data = tf.io.gfile.GFile(path, 'rb').read()
   image = Image.open(BytesIO(img_data))
+  image = image.resize((320, 320))
   (im_width, im_height) = image.size
   return np.array(image.getdata()).reshape(
       (im_height, im_width, 3)).astype(np.uint8)
